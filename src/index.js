@@ -12,7 +12,7 @@ function output(name, value) {
     fs.appendFileSync(process.env.GITHUB_OUTPUT, name + '=' + String(value).replace(/[\r\n]/g, '') + '\n');
   }
 }
-function request(url, token, payload) {
+function request(url, token, tenant, payload) {
   return new Promise((resolve, reject) => {
     const body = JSON.stringify(payload);
     const req = https.request(url, {
@@ -20,6 +20,7 @@ function request(url, token, payload) {
       timeout: 30000,
       headers: {
         Authorization: 'ApiKey ' + token,
+        'X-SecurePact-Tenant': tenant,
         'Content-Type': 'application/json',
         Accept: 'application/json',
         'Content-Length': Buffer.byteLength(body),
@@ -50,6 +51,8 @@ async function main() {
   const url = new URL(input('api-url', true));
   if (url.protocol !== 'https:' || url.username || url.password || url.hash)
     throw new Error('api-url must be an HTTPS URL without embedded credentials or fragments');
+  const tenant = input('tenant-id', true);
+  if (!/^[a-zA-Z0-9_-]{1,128}$/.test(tenant)) throw new Error('Invalid tenant-id');
   const mode = input('scan-mode') || 'full';
   if (!/^[a-zA-Z0-9_-]{1,40}$/.test(mode)) throw new Error('Invalid scan-mode');
   const payload = {
@@ -62,7 +65,7 @@ async function main() {
   if (!payload.repository || !/^[0-9a-f]{40}$/.test(payload.commit_sha))
     throw new Error('GitHub repository and 40-character commit SHA are required');
   // Only repository metadata is sent. No source code or secrets are uploaded.
-  const result = await request(url, token, payload);
+  const result = await request(url, token, tenant, payload);
   // Fail closed on ambiguous or asynchronous responses; never claim a queued scan passed.
   if (!result || result.status !== 'completed' || typeof result.findings_count !== 'number' ||
       !Number.isSafeInteger(result.findings_count) || result.findings_count < 0 ||
