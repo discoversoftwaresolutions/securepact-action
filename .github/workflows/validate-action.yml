@@ -1,0 +1,24 @@
+name: Validate SecurePact Action
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Check Action JavaScript syntax
+        run: node --check src/index.js
+      - name: Check required Action metadata
+        run: |
+          test -s action.yml
+          test -s docs/API-CONTRACT.md
+          grep -q 'using: node20' action.yml
