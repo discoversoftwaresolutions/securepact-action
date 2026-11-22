@@ -1,0 +1,30 @@
+name: SecurePact Security Scan
+description: Submit a repository revision to a SecurePact security scanning API and report its verified result.
+branding:
+  icon: shield
+  color: blue
+inputs:
+  api-key:
+    description: SecurePact API key stored as a GitHub Actions secret
+    required: true
+  api-url:
+    description: HTTPS SecurePact scanning API endpoint (complete URL)
+    required: true
+  scan-mode:
+    description: Requested scan profile
+    required: false
+    default: full
+  fail-on-findings:
+    description: Fail the job when the API reports findings
+    required: false
+    default: 'false'
+outputs:
+  scan-id:
+    description: Scan identifier returned by SecurePact
+  findings-count:
+    description: Findings count returned by SecurePact
+  attestation-id:
+    description: Attestation identifier returned by SecurePact
+runs:
+  using: node20
+  main: src/index.js
