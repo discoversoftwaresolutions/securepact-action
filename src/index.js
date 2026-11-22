@@ -19,7 +19,7 @@ function request(url, token, payload) {
       method: 'POST',
       timeout: 30000,
       headers: {
-        Authorization: 'Bearer ' + token,
+        Authorization: 'ApiKey ' + token,
         'Content-Type': 'application/json',
         Accept: 'application/json',
         'Content-Length': Buffer.byteLength(body),
