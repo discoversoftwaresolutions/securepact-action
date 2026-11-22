@@ -10,6 +10,9 @@ inputs:
   api-url:
     description: HTTPS SecurePact scanning API endpoint (complete URL)
     required: true
+  tenant-id:
+    description: Authorized SecurePact tenant identifier
+    required: true
   scan-mode:
     description: Requested scan profile
     required: false
