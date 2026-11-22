@@ -4,7 +4,7 @@ This document describes the interface expected by the GitHub Action. It is **not
 
 ## Request
 
-The action sends a POST to the user-configured HTTPS `api-url` with a Bearer API key. Example body:
+The action sends a POST to the user-configured HTTPS `api-url` with an `Authorization: ApiKey <key>` header (the existing SecurePact authentication scheme). Example body:
 
 ```json
 {
